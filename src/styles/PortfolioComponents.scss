@@ -1,0 +1,820 @@
+// PortfolioComponents.scss
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+// Variables
+$primary-color: #2563eb;
+$primary-dark: #1d4ed8;
+$primary-light: #3b82f6;
+$secondary-color: #64748b;
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$text-muted: #94a3b8;
+$background-white: #ffffff;
+$background-gray: #f8fafc;
+$border-color: #e2e8f0;
+$border-hover: #cbd5e1;
+$shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+$shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+$shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+// Mixins
+@mixin transition($property: all, $duration: 0.3s, $timing: ease-in-out) {
+  transition: $property $duration $timing;
+}
+
+@mixin hover-lift {
+  @include transition(transform, 0.3s, ease-out);
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@mixin formal-shadow {
+  box-shadow: $shadow-md;
+  &:hover {
+    box-shadow: $shadow-lg;
+  }
+}
+
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+// Certificate Component
+.certificate-card {
+  background: $background-white;
+  border-radius: 16px;
+  border: 1px solid $border-color;
+  overflow: hidden;
+  @include formal-shadow;
+  @include transition();
+  position: relative;
+  font-family: 'Inter', sans-serif;
+
+  &:hover {
+    border-color: $primary-light;
+    transform: translateY(-4px);
+    box-shadow: $shadow-xl;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $primary-color, $primary-light);
+    opacity: 0;
+    @include transition(opacity);
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  .certificate-image {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      @include transition(transform, 0.5s);
+    }
+
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+
+  .certificate-content {
+    padding: 24px;
+    
+    .certificate-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin-bottom: 12px;
+      line-height: 1.4;
+      @include transition(color);
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+
+    .certificate-description {
+      color: $text-secondary;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-weight: 400;
+    }
+
+    .certificate-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: auto;
+
+      .issuer-label {
+        font-size: 0.8rem;
+        color: $text-muted;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+
+      .issuer {
+        font-size: 0.95rem;
+        color: $text-primary;
+        font-weight: 600;
+      }
+
+      .view-credential {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, $primary-color, $primary-light);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        @include transition();
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          @include transition(left, 0.5s);
+        }
+
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
+
+          &::before {
+            left: 100%;
+          }
+        }
+
+        .eye-icon {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}
+
+// Footer Component
+.footer {
+  background: linear-gradient(135deg, $background-white 0%, #f8fafc 100%);
+  border-top: 1px solid $border-color;
+  padding: 40px 20px;
+  margin-top: 60px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, $primary-color, $primary-light);
+  }
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .footer-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100px;
+
+    .loading-spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid $border-color;
+      border-top: 2px solid $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .footer-logo {
+    img {
+      height: 40px;
+      width: auto;
+      @include transition();
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    .footer-text-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $text-primary;
+      text-decoration: none;
+      @include transition();
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, $primary-color, $primary-light);
+        @include transition(width);
+      }
+
+      &:hover {
+        color: $primary-color;
+
+        &::after {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .footer-social-icons {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    .footer-social-link {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 44px;
+      height: 44px;
+      background: $background-white;
+      border: 1px solid $border-color;
+      border-radius: 12px;
+      @include transition();
+      @include formal-shadow;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, $primary-color, $primary-light);
+        opacity: 0;
+        @include transition();
+      }
+
+      &:hover {
+        transform: translateY(-2px) scale(1.05);
+        border-color: $primary-color;
+        box-shadow: $shadow-lg;
+
+        &::before {
+          opacity: 1;
+        }
+
+        .footer-icon {
+          color: white;
+          z-index: 1;
+          position: relative;
+        }
+      }
+
+      .footer-icon {
+        font-size: 1.1rem;
+        color: $text-secondary;
+        @include transition();
+      }
+    }
+  }
+}
+
+// Navbar Component
+.navbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  @include transition(all, 0.3s);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid transparent;
+
+  &.scrolled {
+    @include glass-effect;
+    border-bottom-color: $border-color;
+    box-shadow: $shadow-md;
+  }
+
+  .navbar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+
+    .navbar-logo {
+      &.loading {
+        width: 120px;
+        height: 32px;
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200px 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 4px;
+      }
+
+      img {
+        height: 36px;
+        width: auto;
+        @include transition();
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+
+      .navbar-text-logo {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: $text-primary;
+        text-decoration: none;
+        @include transition();
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: linear-gradient(90deg, $primary-color, $primary-light);
+          @include transition(width);
+        }
+
+        &:hover {
+          color: $primary-color;
+
+          &::after {
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    .navbar-menu {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+
+      .navbar-link {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: $text-secondary;
+        text-decoration: none;
+        @include transition();
+        position: relative;
+        padding: 8px 0;
+
+        &.loading {
+          width: 60px;
+          height: 16px;
+          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+          background-size: 200px 100%;
+          animation: shimmer 1.5s infinite;
+          border-radius: 4px;
+        }
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 2px;
+          background: linear-gradient(90deg, $primary-color, $primary-light);
+          @include transition(width);
+        }
+
+        &:hover,
+        &.active {
+          color: $primary-color;
+
+          &::after {
+            width: 100%;
+          }
+        }
+
+        &.active {
+          font-weight: 600;
+        }
+      }
+    }
+
+    .navbar-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      padding: 8px;
+
+      @media (max-width: 768px) {
+        display: flex;
+      }
+
+      span {
+        width: 20px;
+        height: 2px;
+        background: $text-primary;
+        @include transition();
+        border-radius: 1px;
+
+        &:nth-child(2) {
+          transform-origin: center;
+        }
+      }
+
+      &:hover span {
+        background: $primary-color;
+      }
+    }
+
+    .mobile-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: $background-white;
+      border-bottom: 1px solid $border-color;
+      box-shadow: $shadow-lg;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      @include transition(all, 0.3s);
+
+      &.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .mobile-menu-item {
+        display: block;
+        padding: 16px 20px;
+        color: $text-secondary;
+        text-decoration: none;
+        font-weight: 500;
+        border-bottom: 1px solid $border-color;
+        @include transition();
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover,
+        &.active {
+          color: $primary-color;
+          background: rgba(37, 99, 235, 0.05);
+        }
+      }
+    }
+  }
+}
+
+// PageTitle Component
+.page-title-container {
+  margin-bottom: 32px;
+  text-align: center;
+  position: relative;
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+
+    .letter {
+      display: inline-block;
+      animation: fadeInUp 0.8s ease-out both;
+      @include transition(transform, 0.3s);
+
+      @for $i from 1 through 20 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{$i * 0.05}s;
+        }
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        color: $primary-color;
+      }
+    }
+  }
+
+  .page-title-divider {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, $primary-color, $primary-light);
+    border: none;
+    border-radius: 2px;
+    margin: 0 auto;
+    @include transition(width);
+    animation: fadeInUp 1s ease-out 0.5s both;
+
+    &:hover {
+      width: 120px;
+    }
+  }
+}
+
+// Project Component
+.project-card {
+  background: $background-white;
+  border: 1px solid $border-color;
+  border-radius: 16px;
+  padding: 24px;
+  @include formal-shadow;
+  @include transition();
+  @include hover-lift;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $primary-color, $primary-light);
+    transform: scaleX(0);
+    transform-origin: left;
+    @include transition(transform, 0.3s);
+  }
+
+  &:hover {
+    border-color: $primary-light;
+    box-shadow: $shadow-xl;
+
+    &::before {
+      transform: scaleX(1);
+    }
+
+    .project-folder-icon {
+      color: $primary-color;
+      transform: scale(1.1);
+    }
+  }
+
+  .project-folder-icon {
+    font-size: 2rem;
+    color: $text-muted;
+    margin-bottom: 16px;
+    @include transition();
+  }
+
+  .project-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    @include transition(color);
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  .project-description {
+    color: $text-secondary;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+
+    .tag {
+      padding: 4px 12px;
+      background: rgba(37, 99, 235, 0.1);
+      color: $primary-color;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      @include transition();
+
+      &:hover {
+        background: rgba(37, 99, 235, 0.2);
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  .project-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+
+    .project-date {
+      color: $text-muted;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .project-actions {
+      display: flex;
+      gap: 12px;
+
+      .project-action-link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 36px;
+        height: 36px;
+        background: $background-gray;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        @include transition();
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, $primary-color, $primary-light);
+          opacity: 0;
+          @include transition();
+        }
+
+        &:hover {
+          transform: translateY(-2px);
+          border-color: $primary-color;
+          box-shadow: $shadow-md;
+
+          &::before {
+            opacity: 1;
+          }
+
+          .project-icon {
+            color: white;
+            z-index: 1;
+            position: relative;
+          }
+        }
+
+        .project-icon {
+          font-size: 1rem;
+          color: $text-secondary;
+          @include transition();
+
+          &.demo-icon {
+            font-size: 1.1rem;
+          }
+
+          &.github-icon {
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .page-title-container .page-title {
+    font-size: 2rem;
+  }
+  
+  .certificate-card .certificate-content {
+    padding: 20px;
+  }
+  
+  .project-card {
+    padding: 20px;
+  }
+}
