@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from Vite build directory (dist)
-const distPath = path.join(__dirname, '../../dist');
+// Serve static files from Vite build directory
+const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
 
 // MongoDB connection
@@ -26,7 +26,7 @@ const connectDB = async () => {
   }
 };
 
-// Asset Model
+// Asset Schema
 const AssetSchema = new mongoose.Schema({
   assetType: {
     type: String,
@@ -43,7 +43,29 @@ const AssetSchema = new mongoose.Schema({
 
 const Asset = mongoose.model('Asset', AssetSchema);
 
-// API Routes
+// Get all assets
+app.get('/api/assets', async (req, res) => {
+  try {
+    const assets = await Asset.find({});
+    const assetsMap = {};
+
+    assets.forEach(asset => {
+      assetsMap[asset.assetType] = asset.data;
+    });
+
+    res.json({
+      success: true,
+      data: assetsMap
+    });
+  } catch (error) {
+    console.error('Error fetching all assets:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
 
 // Get a specific asset by type
 app.get('/api/assets/:assetType', async (req, res) => {
@@ -64,30 +86,6 @@ app.get('/api/assets/:assetType', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching asset:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error',
-      error: error.message
-    });
-  }
-});
-
-// Get all assets
-app.get('/api/assets', async (req, res) => {
-  try {
-    const assets = await Asset.find({});
-    const assetsMap = {};
-
-    assets.forEach(asset => {
-      assetsMap[asset.assetType] = asset.data;
-    });
-
-    res.json({
-      success: true,
-      data: assetsMap
-    });
-  } catch (error) {
-    console.error('Error fetching all assets:', error);
     res.status(500).json({
       success: false,
       message: 'Server error',
