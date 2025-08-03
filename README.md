@@ -31,56 +31,27 @@ This is a modern, responsive developer portfolio built using **MERN Stack**, des
 ## 📂 Project Structure
 
 ```
-portfolio/
-├── public/
-├── src/
-|   ├──client/
-│   |  ├── assets/             # Images and static data
-│   |  ├── components/         # Reusable UI components
-│   |  ├── pages/              # Route-level components (Home, About, Contact, etc.)
-│   |  ├── styles/             # SCSS files and variables
-│   |  ├── App.jsx
-│   |  └── main.jsx
-|   ├──server/                 # Backend API (Node.js + Express)
-│      ├── server.js
-│      ├── routes/
-│      ├── config/
-│      ├── models/
-│      └── .env
-├── .gitignore
-├── eslint.config.js
-├── index.html
-├── netlify.toml
-├── package-lock.json
-├── package.json
-├── tailwind.config.js
-├── vite.config.js
-└── README.md
+.
+├── client/                  # Frontend (React/Vite)
+│   ├── public/              # Static assets
+│   ├── src/                 # Source code
+│   ├── package.json         # Frontend dependencies
+│   └── vite.config.js       # Vite configuration
+│
+├── server/                  # Backend (Node.js)
+│   ├── config/              # Database/config files
+│   ├── models/              # Data models
+│   ├── routes/              # API routes
+│   ├── server.js            # Entry point
+│   └── package.json         # Backend dependencies
+│
+├── .gitignore              # Git ignore rules
+└── README.md               # Project documentation
 ```
 
 ---
 
 ## 📦 Installation & Setup
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/Puvanesh-007/my-portfolio-webapp.git
-cd my-portfolio-webapp
-
-# 2. Install frontend dependencies
-npm install
-
-# 3. Run frontend development server
-npm run dev
-```
-
-Visit `http://localhost:5173` to view the portfolio in the browser.
-
----
-
-## ⚙️ Backend Setup
-
-> (Optional if you're integrating backend features like contact form handling or dynamic data loading)
 
 ```bash
 # Navigate to backend folder

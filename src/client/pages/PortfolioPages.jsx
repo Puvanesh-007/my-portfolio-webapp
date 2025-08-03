@@ -6,12 +6,12 @@ import { PageTitle, Project, Certificate } from "../components/components.js";
 import {
   LuGraduationCap,
 } from "react-icons/lu";
-import { FaPhoneAlt, FaJs, FaReact, FaNodeJs, FaPython, FaGitAlt, FaGithub, FaJava, FaHtml5, FaCss3Alt } from 'react-icons/fa';
+import { FaPhoneAlt, FaJs, FaReact, FaNodeJs, FaPython, FaGitAlt, FaGithub, FaJava, FaHtml5, FaCss3Alt, FaUser } from 'react-icons/fa';
 import { TbBrandKotlin } from 'react-icons/tb';
-import { BsFiletypeXml } from 'react-icons/bs';
+import { BsFiletypeXml, BsChatSquareText } from 'react-icons/bs';
 import { SiTailwindcss, SiMongodb, SiExpress } from 'react-icons/si';
-import { MdEmail } from "react-icons/md";
 import * as Icons from "react-icons/fa";
+import { MdEmail, MdSend } from 'react-icons/md';
 import "../styles/PortfolioPages.scss";
 
 const iconMap = {
@@ -397,6 +397,18 @@ export const Certificates = () => {
 // Contact Component
 export const Contact = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  // Get backend URL from environment variables
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const { data: aboutData, loading: aboutLoading, error: aboutError } = useAsset('aboutPage');
   const { data: footerIconsData, loading: iconsLoading, error: iconsError } = useAsset('footerIcons');
 
@@ -404,6 +416,45 @@ export const Contact = () => {
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const response = await fetch(`${backendUrl}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          timestamp: new Date().toISOString()
+        }),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (aboutLoading || iconsLoading) {
     return (
@@ -434,8 +485,9 @@ export const Contact = () => {
       <PageTitle title={"Contact"} />
       
       <div className={`contact-container ${isVisible ? 'visible' : ''}`}>
-        <div className="contact-card">
-          <h1 className="contact-title">Contact Me</h1>
+        {/* Contact Details Section */}
+        <div className="contact-details-card">
+          <h2 className="contact-details-title">Get In Touch</h2>
           <p className="contact-description">
             Feel free to reach out for collaboration, project inquiries, or just to connect!
           </p>
@@ -474,6 +526,102 @@ export const Contact = () => {
               ) : null;
             })}
           </div>
+        </div>
+
+        {/* Contact Form Section */}
+        <div className="contact-form-card">
+          <h2 className="contact-form-title">Send Message</h2>
+          
+          {submitStatus === 'success' && (
+            <div className="success-message">
+              <p>Thank you! Your message has been sent successfully.</p>
+            </div>
+          )}
+          
+          {submitStatus === 'error' && (
+            <div className="error-message">
+              <p>Sorry, there was an error sending your message. Please try again.</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="contact-form">
+            <div className="form-group">
+              <div className="input-wrapper">
+                <FaUser className="input-icon" />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <div className="input-wrapper">
+                <MdEmail className="input-icon" />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Your Email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <div className="input-wrapper">
+                <BsChatSquareText className="input-icon" />
+                <input
+                  type="text"
+                  name="subject"
+                  placeholder="Subject"
+                  value={formData.subject}
+                  onChange={handleInputChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <div className="input-wrapper textarea-wrapper">
+                <textarea
+                  name="message"
+                  placeholder="Your Message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  required
+                  rows="5"
+                  className="form-textarea"
+                ></textarea>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`submit-button ${isSubmitting ? 'submitting' : ''}`}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="button-spinner"></div>
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <MdSend className="button-icon" />
+                  Send Message
+                </>
+              )}
+            </button>
+          </form>
         </div>
       </div>
     </div>

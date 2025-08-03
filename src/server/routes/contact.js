@@ -1,17 +1,10 @@
-require('dotenv').config();
+// api/contact.js (or routes/contact.js)
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
-const cors = require('cors');
-const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const validator = require('validator');
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Security middleware
-app.use(helmet());
+const router = express.Router();
 
 // Rate limiting for contact form submissions
 const contactLimiter = rateLimit({
@@ -21,43 +14,6 @@ const contactLimiter = rateLimit({
     error: 'Too many contact form submissions, please try again later.'
   }
 });
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.set('trust proxy', 1); // Trust proxy for accurate IP addresses
-
-// Serve static files from Vite build directory
-const distPath = path.join(__dirname, 'dist');
-app.use(express.static(distPath));
-
-// MongoDB connection
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio');
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
-  }
-};
-
-// Asset Schema
-const AssetSchema = new mongoose.Schema({
-  assetType: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  data: {
-    type: mongoose.Schema.Types.Mixed,
-    required: true
-  }
-}, {
-  timestamps: true
-});
-
-const Asset = mongoose.model('Asset', AssetSchema);
 
 // Contact Message Schema
 const contactMessageSchema = new mongoose.Schema({
@@ -152,63 +108,8 @@ const sanitizeInput = (data) => {
   };
 };
 
-// ============ ASSET ROUTES ============
-
-// Get all assets
-app.get('/api/assets', async (req, res) => {
-  try {
-    const assets = await Asset.find({});
-    const assetsMap = {};
-
-    assets.forEach(asset => {
-      assetsMap[asset.assetType] = asset.data;
-    });
-
-    res.json({
-      success: true,
-      data: assetsMap
-    });
-  } catch (error) {
-    console.error('Error fetching all assets:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error',
-      error: error.message
-    });
-  }
-});
-
-// Get a specific asset by type
-app.get('/api/assets/:assetType', async (req, res) => {
-  try {
-    const { assetType } = req.params;
-    const asset = await Asset.findOne({ assetType });
-
-    if (!asset) {
-      return res.status(404).json({
-        success: false,
-        message: `Asset type '${assetType}' not found`
-      });
-    }
-
-    res.json({
-      success: true,
-      data: asset.data
-    });
-  } catch (error) {
-    console.error('Error fetching asset:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error',
-      error: error.message
-    });
-  }
-});
-
-// ============ CONTACT ROUTES ============
-
 // POST /api/contact - Submit contact form
-app.post('/api/contact', contactLimiter, async (req, res) => {
+router.post('/', contactLimiter, async (req, res) => {
   try {
     // Sanitize input data
     const sanitizedData = sanitizeInput(req.body);
@@ -264,7 +165,7 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
 
     await contactMessage.save();
 
-    // Log the submission
+    // Log the submission (you might want to integrate with your logging system)
     console.log(`New contact form submission from ${sanitizedData.email}${isSpam ? ' (flagged as spam)' : ''}`);
 
     res.status(201).json({
@@ -293,9 +194,9 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
 });
 
 // GET /api/contact - Get all contact messages (admin only)
-app.get('/api/contact', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    // Add authentication middleware here for production
+    // Add authentication middleware here to protect admin routes
     // if (!req.user || !req.user.isAdmin) {
     //   return res.status(403).json({ error: 'Access denied' });
     // }
@@ -345,9 +246,9 @@ app.get('/api/contact', async (req, res) => {
 });
 
 // PATCH /api/contact/:id - Update message status
-app.patch('/api/contact/:id', async (req, res) => {
+router.patch('/:id', async (req, res) => {
   try {
-    // Add authentication middleware here for production
+    // Add authentication middleware here
     // if (!req.user || !req.user.isAdmin) {
     //   return res.status(403).json({ error: 'Access denied' });
     // }
@@ -392,9 +293,9 @@ app.patch('/api/contact/:id', async (req, res) => {
 });
 
 // DELETE /api/contact/:id - Delete a message
-app.delete('/api/contact/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    // Add authentication middleware here for production
+    // Add authentication middleware here
     // if (!req.user || !req.user.isAdmin) {
     //   return res.status(403).json({ error: 'Access denied' });
     // }
@@ -425,9 +326,9 @@ app.delete('/api/contact/:id', async (req, res) => {
 });
 
 // GET /api/contact/stats - Get contact form statistics
-app.get('/api/contact/stats', async (req, res) => {
+router.get('/stats', async (req, res) => {
   try {
-    // Add authentication middleware here for production
+    // Add authentication middleware here
     // if (!req.user || !req.user.isAdmin) {
     //   return res.status(403).json({ error: 'Access denied' });
     // }
@@ -463,75 +364,4 @@ app.get('/api/contact/stats', async (req, res) => {
   }
 });
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    memory: process.memoryUsage(),
-    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
-  });
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('Global error handler:', err);
-  
-  // Mongoose validation error
-  if (err.name === 'ValidationError') {
-    const validationErrors = {};
-    for (const field in err.errors) {
-      validationErrors[field] = err.errors[field].message;
-    }
-    return res.status(400).json({
-      error: 'Validation failed',
-      details: validationErrors
-    });
-  }
-  
-  // Mongoose cast error
-  if (err.name === 'CastError') {
-    return res.status(400).json({
-      error: 'Invalid ID format'
-    });
-  }
-  
-  // Default error response
-  res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
-      : err.message
-  });
-});
-
-// Serve frontend for all other routes (React Router support)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
-});
-
-// Graceful shutdown
-const gracefulShutdown = () => {
-  console.log('Received shutdown signal, closing server gracefully...');
-  
-  mongoose.connection.close(() => {
-    console.log('MongoDB connection closed');
-    process.exit(0);
-  });
-};
-
-process.on('SIGTERM', gracefulShutdown);
-process.on('SIGINT', gracefulShutdown);
-
-// Start server
-const startServer = async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`API endpoints available:`);
-    console.log(`- Assets: http://localhost:${PORT}/api/assets`);
-    console.log(`- Contact: http://localhost:${PORT}/api/contact`);
-  });
-};
-
-startServer();
+module.exports = router;
